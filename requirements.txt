@@ -1,8 +1,8 @@
 jupyter-book==0.15.1
 datasets
-langchain==0.0.193
+langchain==0.0.203
 chromadb
-openai
+openai[embeddings]
 tiktoken
 rich
 networkx
