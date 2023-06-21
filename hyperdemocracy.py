@@ -24,7 +24,8 @@ def load_assembleco_records(
     if strip_html: 
         df['body'] = df['body'].apply(lambda x: BeautifulSoup(x, 'html.parser').get_text())
         df['summary'] = df['summary'].apply(lambda x: BeautifulSoup(x, 'html.parser').get_text())
-        df['congress_gov_url'] = df['key'].apply(url_from_key)
+        df['congress_gov_url'] = df['key'].apply(address_on_congress)
+        df['assembled_url'] = df['key'].apply(address_on_assembled)
 
     if remove_empty_body: 
         df = df[df['body']!='']
@@ -32,7 +33,7 @@ def load_assembleco_records(
 
     return df
 
-def url_from_key(key): 
+def address_on_congress(key): 
     """Return congress.gov url from key."""
     # TODO add assembled url builder option here as well
     url_map = {
@@ -49,6 +50,9 @@ def url_from_key(key):
     url_legis_class = url_map[legis_class]
     url = f"https://www.congress.gov/bill/{congress_num}th-congress/{url_legis_class}/{legis_num}"
     return url
+
+def address_on_assembled(key):
+    return f"https://assembled.app/measures/{key}"
 
 def split_key(key):
     """
