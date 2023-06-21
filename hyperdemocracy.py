@@ -4,8 +4,13 @@ from bs4 import BeautifulSoup
 import re
 import openai
 
-def load_assembleco_records(process=False, strip_html=False, remove_empty_body=False) -> pd.DataFrame: 
-    ds = load_dataset("assembleco/hyperdemocracy", split="train")
+def load_assembleco_records(
+    ds_name="assembleco/hyperdemocracy",
+    process=False, 
+    strip_html=False, 
+    remove_empty_body=False,
+) -> pd.DataFrame: 
+    ds = load_dataset(ds_name, split="train")
     df = ds.to_pandas()
     if process: 
         df['congress_num'] = None
