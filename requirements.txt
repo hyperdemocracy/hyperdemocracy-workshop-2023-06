@@ -4,6 +4,8 @@ langchain==0.0.203
 chromadb
 openai[embeddings]
 sentence-transformers
+accelerate
+bitsandbytes
 tiktoken
 rich
 networkx
