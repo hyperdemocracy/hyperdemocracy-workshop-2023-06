@@ -74,3 +74,51 @@ def split_key(key):
 def get_openai_embedding(word): 
     openai_embd = openai.Embedding.create(input=word, model='text-embedding-ada-002')['data'][0]['embedding']
     return openai_embd
+
+def get_legislative_documents_from_df(df):
+    from langchain.schema import Document 
+    all_docs = []
+    for irow, row in df.iterrows():
+        doc = Document(
+            page_content=row['body'],
+            metadata={
+                # Note: chroma can only filter on float, str, or int
+                # https://docs.trychroma.com/usage-guide#using-where-filters
+                'key': row['key'],
+                'congress_num': row['congress_num'],
+                'legis_class': row['legis_class'],
+                'legis_num': row['legis_num'],
+                'name': row['name'],
+                'summary': row['summary'],
+                'sponsor': row['sponsors'][0][0],
+                'source': row['congress_gov_url'],
+            },
+        )
+        all_docs.append(doc)
+    return all_docs
+
+def filter_aco_df(df, query):
+    from fuzzywuzzy import fuzz, process
+    """Filter df by query string."""
+    column_thresholds = {
+        'key': 100,
+        'congress_num': 100,
+        'legis_class': 100,
+        'legis_num': 100,
+        'name': 50, 
+        'summary': 50,
+        'sponsor': 50,
+        'congress_gov_url': 100,
+    }
+    matching_rows = []
+    for idx, row in df.iterrows():
+        for col, item in row.items():
+            if col in column_thresholds:  # only consider columns for which a threshold is given
+                ratio = fuzz.token_set_ratio(str(item).lower(), query.lower())
+                print(col, item, ratio)
+                if ratio >= column_thresholds[col]:
+                    matching_rows.append(idx)
+                    break  # once a match is found in a row, no need to check the rest of the items in that row
+    import rich
+    rich.print(df.loc[matching_rows])
+    return df.loc[matching_rows]
