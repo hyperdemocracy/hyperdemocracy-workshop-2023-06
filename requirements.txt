@@ -10,3 +10,4 @@ tiktoken
 rich
 networkx
 python-dotenv
+pre-commit
