@@ -3,6 +3,7 @@ datasets
 langchain==0.0.203
 chromadb
 openai[embeddings]
+sentence-transformers
 tiktoken
 rich
 networkx
