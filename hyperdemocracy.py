@@ -97,8 +97,9 @@ def get_legislative_documents_from_df(df):
         all_docs.append(doc)
     return all_docs
 
-def filter_aco_df(df, query):
-    from fuzzywuzzy import fuzz, process
+def filter_aco_df(df, query, verbose=False):
+    from fuzzywuzzy import fuzz
+    import rich
     """Filter df by query string."""
     column_thresholds = {
         'key': 100,
@@ -115,10 +116,11 @@ def filter_aco_df(df, query):
         for col, item in row.items():
             if col in column_thresholds:  # only consider columns for which a threshold is given
                 ratio = fuzz.token_set_ratio(str(item).lower(), query.lower())
-                print(col, item, ratio)
+                if verbose:
+                    print(col, item, ratio)
                 if ratio >= column_thresholds[col]:
                     matching_rows.append(idx)
                     break  # once a match is found in a row, no need to check the rest of the items in that row
-    import rich
-    rich.print(df.loc[matching_rows])
+    if verbose:
+        rich.print(df.loc[matching_rows])
     return df.loc[matching_rows]
