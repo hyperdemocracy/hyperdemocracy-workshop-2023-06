@@ -11,3 +11,4 @@ rich
 networkx
 python-dotenv
 pre-commit
+streamlit

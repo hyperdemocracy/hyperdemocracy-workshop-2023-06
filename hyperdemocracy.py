@@ -9,6 +9,7 @@ def load_assembleco_records(
     process=False, 
     strip_html=False, 
     remove_empty_body=False,
+    col_order=None
 ) -> pd.DataFrame: 
     ds = load_dataset(ds_name, split="train")
     df = ds.to_pandas()
@@ -28,6 +29,19 @@ def load_assembleco_records(
 
     if remove_empty_body: 
         df = df[df['body']!='']
+
+    """reorder columns based on a list of column names in passed order"""
+    if col_order is not None: 
+        colset = set(df.columns.tolist())
+        ordered = []
+        for col in col_order: 
+            if col not in colset: 
+                raise ValueError(f"Column {col} not in dataframe.")
+            else: 
+                ordered.append(col)
+                colset.remove(col)
+        ordered += list(colset)
+        df = df[ordered]
 
 
     return df
