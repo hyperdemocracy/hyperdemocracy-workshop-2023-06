@@ -14,3 +14,4 @@ pre-commit
 streamlit
 fuzzywuzzy
 python-Levenshtein
+pinecone-client[grpc]

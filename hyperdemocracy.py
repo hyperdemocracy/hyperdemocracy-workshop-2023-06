@@ -6,9 +6,9 @@ import openai
 
 def load_assembleco_records(
     ds_name="assembleco/hyperdemocracy",
-    process=False, 
-    strip_html=False, 
-    remove_empty_body=False,
+    process=True, 
+    strip_html=True, 
+    remove_empty_body=True,
     col_order=None
 ) -> pd.DataFrame: 
     ds = load_dataset(ds_name, split="train")
@@ -124,3 +124,54 @@ def filter_aco_df(df, query, verbose=False):
     if verbose:
         rich.print(df.loc[matching_rows])
     return df.loc[matching_rows]
+
+
+
+def get_aco_split_docs(docs, chunk_size=512, chunk_overlap=128):
+    from langchain.text_splitter import RecursiveCharacterTextSplitter
+    text_splitter = RecursiveCharacterTextSplitter(chunk_size=chunk_size, chunk_overlap=chunk_overlap)
+    split_docs = text_splitter.split_documents(docs)
+    return split_docs
+
+
+def get_config(provider="OPENAI"):
+
+    assert provider in ["HF", "OPENAI"]
+
+    CONFIGS = {
+        "HF": {
+            "embd": "sentence-transformers/all-mpnet-base-v2",
+            "llm": "google/flan-t5-base",
+            #"llm": "google/flan-t5-large",
+            #"llm": "google/flan-ul2",
+        },
+        "OPENAI": {
+            "embd": "text-embedding-ada-002",
+            "llm": "gpt-3.5-turbo-16k",
+        },
+    }
+
+    CONFIG = CONFIGS[provider]
+
+    return CONFIG
+
+def get_pinecone_index():
+    import os
+    from dotenv import load_dotenv
+    import pinecone
+
+    load_dotenv()
+    from langchain.vectorstores import Pinecone
+    from langchain.embeddings import OpenAIEmbeddings
+
+    # initialize pinecone
+    pinecone.init(
+        api_key=os.environ['PINECONE_API_KEY'],  # find at app.pinecone.io
+        environment=os.environ['PINECONE_ENV'],  # next to api key in console
+    )
+
+    embeddings = OpenAIEmbeddings()
+
+
+    docsearch = Pinecone.from_existing_index(os.environ['PINECONE_INDEX'], embedding=embeddings)
+    return docsearch

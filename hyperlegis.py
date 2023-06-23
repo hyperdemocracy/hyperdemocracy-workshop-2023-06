@@ -4,7 +4,10 @@ import numpy as np
 import hyperdemocracy as hd
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from super_dataframe import super_dataframe
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
+from langchain.schema import Document 
 
 st.title('Hyperlegis - Ask Questions About Legislation')
 
@@ -31,7 +34,14 @@ st.subheader('Assembleco Records 📜')
 editable_df = st.data_editor(super_dataframe(data))
 st.caption('use ⌘ Cmd + F or Ctrl + F to search the table')
 
-def langchain_setup(n_docs=100): 
-    docs = hd.get_legislative_documents_from_df(data)
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=512, chunk_overlap=128)
-    split_docs = text_splitter.split_documents(docs)
+docsearch = hd.get_pinecone_index()
+
+docquery = st.text_input("Enter your question here","")
+
+if docquery != "":
+
+    found_docs = docsearch.max_marginal_relevance_search(docquery, k=2, fetch_k=10)
+
+    for doc in found_docs:
+        st.subheader(doc.metadata['key'])
+        st.write(doc.page_content)
