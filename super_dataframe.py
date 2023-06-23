@@ -42,7 +42,7 @@ def super_dataframe(df: pd.DataFrame) -> pd.DataFrame:
         to_filter_columns = st.multiselect("Filter by", df.columns)
         search_input = st.text_input("Search for", key="text")
 
-        if search_input is not "":
+        if search_input != "":
             df = filter_aco_df(df, search_input)
         else: 
             df = df
