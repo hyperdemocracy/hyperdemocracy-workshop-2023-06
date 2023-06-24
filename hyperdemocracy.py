@@ -186,3 +186,6 @@ def get_qa_with_sources_chain(llm):
         return_source_documents=True,
     )
     return qaws
+
+def get_agent(llm=None):
+    pass

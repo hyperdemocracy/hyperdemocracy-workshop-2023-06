@@ -15,3 +15,4 @@ streamlit
 fuzzywuzzy
 python-Levenshtein
 pinecone-client[grpc]
+protobuf==3.20
