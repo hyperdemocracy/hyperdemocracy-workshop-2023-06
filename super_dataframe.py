@@ -20,6 +20,9 @@ def super_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """
     modify = st.checkbox("Filter or Search")
 
+    # if st.session_state['query_results'] is not None:
+
+
     if not modify:
         return df
 

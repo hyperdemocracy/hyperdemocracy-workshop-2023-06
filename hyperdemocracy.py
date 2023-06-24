@@ -175,3 +175,14 @@ def get_pinecone_index():
 
     docsearch = Pinecone.from_existing_index(os.environ['PINECONE_INDEX'], embedding=embeddings)
     return docsearch
+
+def get_qa_with_sources_chain(llm):
+    from langchain.chains import RetrievalQAWithSourcesChain
+    retriever = get_pinecone_index().as_retriever()
+    qaws = RetrievalQAWithSourcesChain.from_chain_type(
+        llm=llm, 
+        chain_type="stuff", 
+        retriever=retriever, 
+        return_source_documents=True,
+    )
+    return qaws
